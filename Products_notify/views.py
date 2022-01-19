@@ -51,7 +51,7 @@ def login(request):
 
                 return redirect("/")
             else:
-                return render(request, "login.html", {"alert": "Invalid email or password"})
+                return render(request, "login.html", {"alert": "Invalid email or password","email":email})
 
     return render(request, "login.html")
 
@@ -64,7 +64,6 @@ def logout(request):
 
 def add_products(request):
     if request.method == "POST":
-        if request.session.get("id"):
             product = request.POST.get("product")
             vendor_name = request.POST.get("vendor_name")
             vendor_email = request.POST.get("vendor_email")
@@ -82,8 +81,10 @@ def add_products(request):
                 return render(request, "index.html", {"msg": "Product has been added successfully", "get_data": Products.objects.all()})
             else:
                 return render(request, "add_products.html", {"alert": "Product purchased date cannot be greater than expiry date", "product": product, "vendor_name": vendor_name, "vendor_email": vendor_email})
-        else:
-            return render(request, "login.html", {"alert": "Login first to add products"})
+
+    elif not request.session.get("id"):
+        return render(request, "login.html", {"alert": "Login first to add products"})
+
     return render(request, "add_products.html")
 
 
