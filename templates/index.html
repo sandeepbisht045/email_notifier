@@ -1,0 +1,149 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <!-- Required meta tags -->
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
+    integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+
+  <title>{% block title%}Mates{% endblock %}</title>
+  {% load static %}
+  <link rel="stylesheet" href="{% static 'nav.css' %}">
+  <style>
+    /* {% block css %} {% endblock %} */
+
+    #blink {
+      font-family: serif;
+      color: #008000;
+      font-weight: bolder;
+      font-family: cursive;
+      animation: animate 3s linear infinite;
+
+    }
+
+    @keyframes animate {
+      0% {
+        visibility: hidden;
+      }
+
+      50% {
+        visibility: visible;
+      }
+
+      100% {
+        opacity: 0;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <nav class="navbar fixed-top navbar-expand-lg navbar-dark bg-dark" style="background-color: #032054 !important;">
+    <div class="container-fluid">
+      <a class="navbar-brand icon-color" href="/add_products"><b style="color: white;">Add Products</b></a>
+
+
+      {%if request.session.id%}
+      <a class="navbar-brand icon-color" href="/logout"><b style="color: white;">Logout</b></a>
+
+      {%else%}
+      <a class="navbar-brand icon-color" href="/login"><b style="color: white;">Login</b></a>
+
+      {%endif%}
+    </div>
+    </div>
+
+  </nav>
+
+  <!-- ______________________________________________________________________________________________________________ -->
+
+
+  <div>.</div>
+  <div>.</div>
+  <div>.</div>
+
+  {%block body%}
+  {%if msg%}
+  <div class="row" id="display_alert">
+    <div class="col-md-4"></div>
+    <div class="alert alert-primary text-center col-md-4  " role="alert"
+      style="background-color: rgb(118, 101, 179); color: white;">
+      <b>{{msg}}</b>
+      <input type="hidden" id="hidden" value="{{msg}}">
+    </div>
+  </div>
+  {%endif%}
+  <div class="container">
+    <div class="row ml-1">
+      {% for i in get_data %}
+
+      <div class="col-sm-4 ml-1">
+
+        <div class="card m-4" style="width: 18rem;">
+
+          <img class="card-img-top" src="/media/{{i.photo}}" alt="Card image cap" style="height: 300px; width: 300px ;">
+          <div class="card-body">
+            <h5 class="card-title"><b>{{i.name|title|truncatechars:20}}</b> </h5>
+            <span style="display: inline; color: blue; font-weight: bolder;">Vendor Name :</span> <span
+              class="card-text">{{ i.vendor_name|title|truncatechars:25 }}</span> <br>
+            <hr>
+            <span style="display: inline; color: blue; font-weight: bolder;">Vendor Email :</span> <span
+              class="card-text">{{ i.vendor_email|truncatechars:25 }}</span> <br>
+            <hr>
+            <span style="display: inline; color: blue; font-weight: bolder;">Purchased on :</span> <span
+              class="card-text">{{i.sdate}}</span>
+            <hr>
+            <span style="display: inline; color: blue; font-weight: bolder;">Expires on :</span> <span
+              class="card-text">{{i.edate}}</span>
+            <form action="/delete/{{i.id}}" method="post" id="delete" style="display: block;">
+              {%csrf_token%}
+            </form>
+            <button type="button" class="btn btn-danger m-4 " value="{{i.id}}" onclick="del()">Delete</button>
+          </div>
+        </div>
+      </div>
+
+      {% endfor %}
+
+    </div>
+  </div>
+
+
+  {% block js %}
+  <script>
+    var display_alert = document.getElementById("display_alert");
+    setTimeout(
+      function x() {
+        display_alert.style.display = "none";
+      }, 3000
+    )
+
+    setTimeout(function(){
+    var y=document.getElementById("hidden").value;
+    if (y!=""){
+    location.replace("/")}	},2000
+)
+
+    function del() {
+      var txt;
+      if (confirm("Are you sure you want to delete?")) {
+        document.getElementById("delete").submit();
+      }
+    }
+  </script>
+  {% endblock %}
+
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
+    integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
+    crossorigin="anonymous"></script>
+
+  
+</body>
+{%endblock%}
+
+</html>
