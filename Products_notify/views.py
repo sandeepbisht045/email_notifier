@@ -18,7 +18,8 @@ def mail_send(request):
         for i in get_data:
             difference = (i.edate-cur_date).days
             if difference <= 30 and difference > 0:
-                prod_lst.append(f"{i.name} : {difference} days")
+                if difference%6==0 or difference==1:
+                  prod_lst.append(f"{i.name} : {difference} days")
         if prod_lst:
             htmlgen = f"<b> Your purchased products will expire as : </b> <br>"
             for i in prod_lst:
