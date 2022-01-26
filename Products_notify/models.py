@@ -19,3 +19,9 @@ class User(models.Model):
 
     def __str__(self):
         return self.email
+
+class Subscribe(models.Model):
+    email=models.EmailField(default="",max_length=50)
+    status=models.IntegerField(default=1)
+    def __str__(self):
+        return self.email

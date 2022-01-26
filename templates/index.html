@@ -87,7 +87,11 @@
   <div class="container">
     <div class="row ml-1">
       
-      <div class="row "><div class="col-md-4"></div><div class="col-md-4"><form autocomplete="off" action="/search" method="get"><input placeholder="Search Products" style="display: inline; border-radius: 10px; " type="text" name="search" class="m-2 "><input  style="padding: 4px; color: white; background-color: violet; border-radius: 10px; border: transparent;" type="submit" value="Search"></form></div></div>
+      <div class="row ">
+      {%if request.session.id%}
+        <div class="col-md-5"><form autocomplete="off" action="/subscribe" method="get"><input placeholder="Enter Email for Alert" style="display: inline; border-radius: 10px; " type="email" name="email" class="m-2 "><input  style="padding: 4px; color: white; background-color: green; border-radius: 10px; border: transparent;" type="submit" value="Subscribe/Unsubscribe"></form></div>
+     {%endif%}
+      <div class="col-md-4"><form autocomplete="off" action="/search" method="get"><input placeholder="Search Products" style="display: inline; border-radius: 10px; " type="text" name="search" class="m-2 "><input  style="padding: 4px; color: white; background-color: violet; border-radius: 10px; border: transparent;" type="submit" value="Search"></form></div></div>
       {% for i in get_data %}
 
       <div class="col-sm-4 ml-1">
@@ -137,7 +141,7 @@
     setTimeout(function(){
     var y=document.getElementById("hidden").value;
     if (y!=""){
-    location.replace("/")}	},2000
+    location.replace("/")}	},3000
 )
 
     function del() {

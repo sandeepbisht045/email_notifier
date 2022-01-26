@@ -1,17 +1,18 @@
 from django.shortcuts import render, redirect
 from django.http import HttpResponse
-from .models import Products, User
+from .models import Products, User,Subscribe
 import datetime
 from django.core.mail import send_mail
 # Create your views here.
 
+x = datetime.datetime.now()
+day = x.strftime("%d")
+month = x.strftime("%m")
+year = x.strftime("%Y")
+cur_date = datetime.date(int(year), int(month), int(day))
+
 def mail_send(request):
     prod_lst = []
-    x = datetime.datetime.now()
-    day = x.strftime("%d")
-    month = x.strftime("%m")
-    year = x.strftime("%Y")
-    cur_date = datetime.date(int(year), int(month), int(day))
     get_data = Products.objects.all()
     if get_data:
         for i in get_data:
@@ -19,12 +20,21 @@ def mail_send(request):
             if difference <= 30 and difference > 0:
                 if difference%5==0 or difference==1:
                   prod_lst.append(f"{i.name} : {difference} days")
+                elif difference==0:
+                    prod_lst.append(f"{i.name} expired")
         if prod_lst:
             htmlgen = f"<h3> Your purchased products will expire as mentioned below : </h3> <br>"
             for i in prod_lst:
                 htmlgen += f"<ul><list><b> {i}</b></list> </ul><br>"
+            lst=[]
+            emails=Subscribe.objects.filter(status=1)
+            if not emails:
+                return HttpResponse("no emails subscribed")
+            for i in emails:
+                lst.append(i.email)
+
             send_mail('Products Expiry Alert', "", 'ajaynotify@gmail.com',
-                      ["sandeepbisht045@gmail.com"], fail_silently=False, html_message=htmlgen)
+                      lst, fail_silently=False, html_message=htmlgen)
 
             return HttpResponse("success")
         else:
@@ -34,6 +44,7 @@ def mail_send(request):
 
 
 def index(request):
+    
     return render(request, "index.html", {"get_data": Products.objects.all()})
 
 
@@ -75,10 +86,11 @@ def add_products(request):
                 license_lst[1]), int(license_lst[2]))
             edate = datetime.date(int(expiry_lst[0]), int(
                 expiry_lst[1]), int(expiry_lst[2]))
-            if (edate-sdate).days >= 0:
+            if (edate-sdate).days >= 0 :
                 Products.objects.create(name=product, sdate=sdate, edate=edate,
                                         vendor_name=vendor_name, vendor_email=vendor_email).save()
                 return render(request, "index.html", {"msg": "Product has been added successfully", "get_data": Products.objects.all()})
+
             else:
                 return render(request, "add_products.html", {"alert": "Product purchased date cannot be greater than expiry date", "product": product, "vendor_name": vendor_name, "vendor_email": vendor_email})
 
@@ -113,6 +125,33 @@ def search(request):
 
     else:
         return redirect("/")
+
+
+
+def subscribe(request):
+    if request.session.get("id"):
+        email = request.GET.get("email")
+        
+        subs=Subscribe.objects.filter(email=email)
+        if subs:
+            for i in subs:
+                status=i.status
+            if status==1:
+                subs.update(status=0)
+                return render(request, "index.html", {"msg": "You have unsubscribed & won't get any alert regarding products expiry in future", "get_data": Products.objects.all()})
+
+            else:
+                subs.update(status=1)
+                return render(request, "index.html", {"msg": "You have subscribed successfully for email alert", "get_data": Products.objects.all()})
+    
+        else:
+            Subscribe.objects.create(email=email).save()
+            return render(request, "index.html", {"msg": "You have subscribed successfully for email alert", "get_data": Products.objects.all()})
+
+           
+    else:
+        return render(request, "login.html", {"alert": "Login first to proceed"})
+        
 
 
 
