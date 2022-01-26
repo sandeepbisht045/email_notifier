@@ -5,7 +5,6 @@ import datetime
 from django.core.mail import send_mail
 # Create your views here.
 
-
 def mail_send(request):
     prod_lst = []
     x = datetime.datetime.now()
@@ -18,21 +17,20 @@ def mail_send(request):
         for i in get_data:
             difference = (i.edate-cur_date).days
             if difference <= 30 and difference > 0:
-                if difference%6==0 or difference==1:
+                if difference%5==0 or difference==1:
                   prod_lst.append(f"{i.name} : {difference} days")
         if prod_lst:
-            htmlgen = f"<b> Your purchased products will expire as : </b> <br>"
+            htmlgen = f"<h3> Your purchased products will expire as mentioned below : </h3> <br>"
             for i in prod_lst:
-                htmlgen += f"<list> {i}</list> <br>"
+                htmlgen += f"<ul><list><b> {i}</b></list> </ul><br>"
             send_mail('Products Expiry Alert', "", 'ajaynotify@gmail.com',
-                      ["sandeepbisht045@gmail.com.com"], fail_silently=False, html_message=htmlgen)
+                      ["sandeepbisht045@gmail.com"], fail_silently=False, html_message=htmlgen)
 
-            # # print(i.sdate-timedelta(days=30))
             return HttpResponse("success")
         else:
             return HttpResponse("")
     else:
-        return HttpResponse("Products are not available")
+        return HttpResponse("Products are not available in the db")
 
 
 def index(request):
@@ -44,6 +42,7 @@ def login(request):
         if request.method == "POST":
             email = request.POST.get("email")
             password = request.POST.get("password")
+            
 
             filter_data = User.objects.filter(email=email, password=password)
             if filter_data.exists():
@@ -101,3 +100,20 @@ def delete(request, id):
 
     else:
         return render(request, "login.html", {"alert": "Login first to delete"})
+        
+
+def search(request):
+    search = request.GET.get("search").strip().lower()
+    if search:
+        query=Products.objects.filter(name__icontains=search)
+        if query:
+            return render(request,"index.html",{"get_data":query})
+        else:
+             return redirect("/")
+
+    else:
+        return redirect("/")
+
+
+
+

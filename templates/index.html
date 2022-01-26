@@ -83,8 +83,11 @@
     </div>
   </div>
   {%endif%}
+  <br>
   <div class="container">
     <div class="row ml-1">
+      
+      <div class="row "><div class="col-md-4"></div><div class="col-md-4"><form autocomplete="off" action="/search" method="get"><input placeholder="Search Products" style="display: inline; border-radius: 10px; " type="text" name="search" class="m-2 "><input  style="padding: 4px; color: white; background-color: violet; border-radius: 10px; border: transparent;" type="submit" value="Search"></form></div></div>
       {% for i in get_data %}
 
       <div class="col-sm-4 ml-1">
@@ -105,10 +108,13 @@
             <hr>
             <span style="display: inline; color: blue; font-weight: bolder;">Expires on :</span> <span
               class="card-text">{{i.edate}}</span>
+   
+              {%if request.session.id%}
             <form action="/delete/{{i.id}}" method="post" id="delete" style="display: block;">
               {%csrf_token%}
             </form>
             <button type="button" class="btn btn-danger m-4 " value="{{i.id}}" onclick="del()">Delete</button>
+            {%endif%}
           </div>
         </div>
       </div>

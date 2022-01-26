@@ -128,10 +128,10 @@ MEDIA_ROOT=BASE_DIR/'media'
 SESSION_COOKIE_AGE=72000
 # 72000 seconds means 20hrs
 
-# STATICFILES_DIRS = [
-#     BASE_DIR / "static",
+STATICFILES_DIRS = [
+    BASE_DIR / "static",
     
-# ]
+]
 
 
 # Default primary key field type
